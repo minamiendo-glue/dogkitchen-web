@@ -1,13 +1,13 @@
-const nextConfig = {
+// next.config.ts
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: process.env.NEXT_PUBLIC_MEDIA_HOST || 'dogkitchen.paw-spoon.com',
-        pathname: '/**',
-      },
+      { protocol: "https", hostname: "dogkitchen.paw-spoon.com" },
+      { protocol: "https", hostname: "*.paw-spoon.com" },
     ],
   },
 };
-export default nextConfig;
 
+export default nextConfig;

@@ -1,19 +1,23 @@
 // lib/wp.ts
-const WP_URL = process.env.WP_URL!;
+export async function wp<T = any>(
+  path: string, // 例: "/wp/v2/recipe?per_page=12&_embed=1"
+  init?: RequestInit & { next?: { revalidate?: number; tags?: string[] } }
+): Promise<T> {
+  const url = `/api/wp?path=${encodeURIComponent(path)}`;
 
-type FetchOpts = {
-  next?: { revalidate?: number } | undefined;
-};
-
-export async function wpFetch<T>(path: string, opts: FetchOpts = { next: { revalidate: 60 } }) {
-  const url = `${WP_URL.replace(/\/$/, '')}${path}`;
   const res = await fetch(url, {
-    headers: { Accept: 'application/json' },
-    next: opts.next,
+    ...init,
+    next: init?.next ?? { revalidate: 300, tags: ["wp"] },
   });
+
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`WP fetch failed (${res.status}): ${url}\n${text}`);
+    throw new Error(`proxy fetch failed (${res.status})`);
   }
-  return res.json() as Promise<T>;
+
+  const data = (await res.json()) as any;
+
+  if (data?.error === "fallback" && Array.isArray(data.items)) {
+    return [] as T;
+  }
+  return data as T;
 }
