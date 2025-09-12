@@ -16,11 +16,13 @@ async function fetchWp(path: string, init?: RequestInit) {
   const user = process.env.WP_BASIC_USER;
   const pass = process.env.WP_BASIC_PASS;
   if (user && pass) {
-    const token = btoa(`${user}:${pass}`);
+    const token =
+      typeof btoa !== "undefined"
+        ? btoa(`${user}:${pass}`)
+        : Buffer.from(`${user}:${pass}`).toString("base64");
     headers.set("Authorization", `Basic ${token}`);
   }
 
-  // 軽いリトライ
   const url = buildWpUrl(path);
   for (const wait of [0, 150, 400, 800]) {
     try {
@@ -28,8 +30,11 @@ async function fetchWp(path: string, init?: RequestInit) {
       const res = await fetch(url, { ...init, headers, cache: "no-store" });
       if (res.ok) return res;
       if (![403, 429, 500, 502, 503, 504].includes(res.status)) return res;
-    } catch (_) {}
+    } catch {
+      // ここは握りつぶしてリトライ継続
+    }
   }
+
   // フォールバック（空構造）でアプリを落とさない
   return new Response(JSON.stringify({ items: [], error: "fallback" }), {
     status: 200,
