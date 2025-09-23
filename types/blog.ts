@@ -78,7 +78,7 @@ export interface CreateArticleData {
   content: string;
   excerpt?: string;
   featured_image_url?: string;
-  status: 'draft' | 'published';
+  status: 'draft' | 'published' | 'archived';
   recipe_ids?: string[];
 }
 
@@ -96,7 +96,7 @@ export interface CreateFeatureData {
   slug: string;
   excerpt?: string;
   featured_image_url?: string;
-  status: 'draft' | 'published';
+  status: 'draft' | 'published' | 'archived';
   sections?: FeatureSection[];
   recipe_ids?: string[];
 }
