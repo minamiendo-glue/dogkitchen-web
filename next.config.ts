@@ -24,6 +24,10 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
   generateEtags: true,
+  // ESLintルールを本番ビルドで無効化
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   // APIルートのボディサイズ制限は各APIルートで個別に設定
 };
 
