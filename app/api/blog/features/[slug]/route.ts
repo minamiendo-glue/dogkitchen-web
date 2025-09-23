@@ -2,14 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { Feature } from '@/types/blog';
 
-interface RouteParams {
-  params: {
-    slug: string;
-  };
-}
-
 // 個別特集取得
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
   try {
     if (!supabaseAdmin) {
       return NextResponse.json(

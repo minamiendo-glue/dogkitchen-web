@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 
-interface RouteParams {
-  params: {
-    slug: string;
-  };
-}
-
 // 管理画面用の特集取得（全てのステータス）
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
   try {
     if (!supabaseAdmin) {
       return NextResponse.json(
