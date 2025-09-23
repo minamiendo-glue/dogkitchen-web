@@ -5,7 +5,19 @@ import { useAuth } from '@/components/auth/supabase-provider';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Header } from '@/components/header';
-// import { DogProfile } from '@/lib/data/mock-dog-profiles'; // Supabaseに移行
+
+// DogProfile型定義
+interface DogProfile {
+  id: string;
+  userId: string;
+  name: string;
+  weight: number;
+  activityLevel: 'low' | 'medium' | 'high';
+  healthConditions: string[];
+  lifeStage: 'puppy' | 'adult' | 'senior';
+  breed: string;
+  createdAt: string;
+}
 
 const healthConditions = [
   'アレルギー',
@@ -20,7 +32,7 @@ const healthConditions = [
 ];
 
 export default function EditDogProfile() {
-  const { user, session, loading } = useAuth();
+  const { user, session, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
@@ -38,10 +50,10 @@ export default function EditDogProfile() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       router.push('/login');
     }
-  }, [loading, user, router]);
+  }, [authLoading, user, router]);
 
   useEffect(() => {
     // URLパラメータからIDを取得
@@ -157,7 +169,7 @@ export default function EditDogProfile() {
     }
   };
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
