@@ -35,7 +35,7 @@ export default function EditDogProfile() {
   const { user, session, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [dogProfile, setDogProfile] = useState<DogProfile>({
     id: '',
     userId: '',
@@ -47,7 +47,7 @@ export default function EditDogProfile() {
     breed: '',
     createdAt: ''
   });
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -94,7 +94,7 @@ export default function EditDogProfile() {
     }
   }, [searchParams, router, user, session]);
 
-  const handleInputChange = (field: keyof DogProfile, value: any) => {
+  const handleInputChange = (field: keyof DogProfile, value: string | number | string[]) => {
     setDogProfile(prev => ({
       ...prev,
       [field]: value
