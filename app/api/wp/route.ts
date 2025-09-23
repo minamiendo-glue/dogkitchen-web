@@ -24,13 +24,27 @@ async function fetchWp(path: string, init?: RequestInit) {
   }
 
   const url = buildWpUrl(path);
+  
+  // キャッシュ戦略を改善（GETリクエストのみキャッシュ）
+  const cacheStrategy = init?.method === 'GET' ? 'force-cache' : 'no-store';
+  
   for (const wait of [0, 150, 400, 800]) {
     try {
       if (wait) await new Promise((r) => setTimeout(r, wait));
-      const res = await fetch(url, { ...init, headers, cache: "no-store" });
+      const res = await fetch(url, { 
+        ...init, 
+        headers, 
+        cache: cacheStrategy,
+        // タイムアウトを設定
+        signal: AbortSignal.timeout(10000)
+      });
       if (res.ok) return res;
       if (![403, 429, 500, 502, 503, 504].includes(res.status)) return res;
-    } catch {
+    } catch (error) {
+      // タイムアウトやネットワークエラーの場合は早期リターン
+      if (error instanceof Error && error.name === 'TimeoutError') {
+        break;
+      }
       // ここは握りつぶしてリトライ継続
     }
   }
