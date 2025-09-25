@@ -8,14 +8,7 @@ import { RichTextEditor } from '@/components/admin/rich-text-editor';
 import { FeatureSectionEditor } from '@/components/admin/feature-section-editor';
 import RecipeSearch from '@/components/admin/recipe-search';
 import { CreateFeatureData, FeatureSection } from '@/types/blog';
-
-interface Recipe {
-  id: string;
-  title: string;
-  thumbnail_url?: string;
-  difficulty: string;
-  cooking_time: number;
-}
+import { Recipe } from '@/types/recipe';
 
 export default function CreateFeaturePage() {
   const router = useRouter();
@@ -50,7 +43,31 @@ export default function CreateFeaturePage() {
       if (response.ok) {
         const data = await response.json();
         console.log('取得したレシピデータ:', data.recipes);
-        setRecipes(data.recipes || []);
+        
+        // APIから取得したデータをRecipe型に変換
+        const convertedRecipes: Recipe[] = (data.recipes || []).map((recipe: any) => ({
+          id: recipe.id,
+          title: recipe.title,
+          slug: recipe.id, // IDをslugとして使用
+          description: recipe.description || '',
+          cookingTimeMinutes: recipe.cooking_time || 0,
+          lifeStage: recipe.life_stage as any || 'adult',
+          healthConditions: recipe.health_conditions || [],
+          proteinType: recipe.protein_type as any || 'chicken',
+          mealScene: recipe.meal_scene as any || 'daily',
+          difficulty: recipe.difficulty as any || 'easy',
+          videoUrl: recipe.main_video_url || '',
+          thumbnailUrl: recipe.thumbnail_url || '',
+          nutritionInfo: recipe.nutrition_info,
+          ingredients: recipe.ingredients || [],
+          instructions: recipe.instructions || [],
+          servings: recipe.servings || '',
+          calories: recipe.calories || '',
+          nutrition: recipe.nutrition,
+          createdAt: new Date(recipe.created_at || Date.now())
+        }));
+        
+        setRecipes(convertedRecipes);
       } else {
         console.error('レシピ取得失敗:', response.status, response.statusText);
       }
