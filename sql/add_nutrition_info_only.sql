@@ -21,3 +21,5 @@ ADD COLUMN IF NOT EXISTS nutrition_info JSONB DEFAULT '{
 
 
 
+
+

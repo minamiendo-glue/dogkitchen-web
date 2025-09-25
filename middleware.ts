@@ -8,8 +8,13 @@ export function middleware(request: NextRequest) {
   // 本番環境でのみBasic認証を適用
   if (process.env.NODE_ENV === 'production') {
     // Basic認証の認証情報を環境変数から取得
-    const validUser = process.env.BASIC_AUTH_USER || 'admin';
-    const validPass = process.env.BASIC_AUTH_PASSWORD || 'password';
+    const validUser = process.env.BASIC_AUTH_USER;
+    const validPass = process.env.BASIC_AUTH_PASSWORD;
+    
+    // Basic認証が設定されていない場合はスキップ
+    if (!validUser || !validPass) {
+      return NextResponse.next();
+    }
 
     if (basicAuth) {
       const authValue = basicAuth.split(' ')[1];

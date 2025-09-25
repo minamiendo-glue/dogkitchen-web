@@ -50,10 +50,10 @@ function extractRecipes(feature: Feature): Recipe[] {
           slug: recipeData.recipe.id, // IDをスラッグとして使用
           description: recipeData.recipe.description,
           thumbnail_url: recipeData.recipe.thumbnail_url,
-          difficulty: '普通', // デフォルト値
-          cooking_time: 30, // デフォルト値
-          life_stage: '成犬', // デフォルト値
-          health_conditions: [] // デフォルト値
+      difficulty: '普通', // デフォルト値
+      cooking_time: 30, // デフォルト値
+      life_stage: '成犬', // デフォルト値
+      health_conditions: [] // デフォルト値
         };
       }
       return null;
@@ -144,80 +144,80 @@ export default function FeaturePage() {
   const RecipeCard = ({ recipe }: { recipe: Recipe }) => (
     <Link href={`/recipes/${recipe.slug}`} className="block group">
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 group-hover:border-red-300">
-        {recipe.thumbnail_url && (
+      {recipe.thumbnail_url && (
           <div className="aspect-video w-full overflow-hidden">
-            <img
-              src={recipe.thumbnail_url}
-              alt={recipe.title}
+          <img
+            src={recipe.thumbnail_url}
+            alt={recipe.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-            />
-          </div>
+          />
+        </div>
+      )}
+      
+      <div className="p-6">
+          <h3 className="text-xl font-semibold text-gray-900 mb-3 leading-tight group-hover:text-red-600 transition-colors duration-200">
+          {recipe.title}
+        </h3>
+        
+        {recipe.description && (
+          <p className="text-gray-600 mb-4 text-sm leading-relaxed">
+            {recipe.description}
+          </p>
         )}
         
-        <div className="p-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-3 leading-tight group-hover:text-red-600 transition-colors duration-200">
-            {recipe.title}
-          </h3>
-          
-          {recipe.description && (
-            <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-              {recipe.description}
-            </p>
-          )}
-          
-          <div className="space-y-3">
-            {/* 調理時間 */}
-            <div className="flex items-center text-sm text-gray-500">
-              <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>調理時間: {recipe.cooking_time}分</span>
-            </div>
-            
-            {/* 難易度 */}
-            <div className="flex items-center text-sm text-gray-500">
-              <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-              <span>難易度: {recipe.difficulty}</span>
-            </div>
-            
-            {/* 体のお悩み */}
-            {recipe.health_conditions && recipe.health_conditions.length > 0 && (
-              <div className="flex items-start text-sm text-gray-500">
-                <svg className="w-4 h-4 mr-2 mt-0.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-                <div>
-                  <span className="block mb-1">体のお悩み:</span>
-                  <div className="flex flex-wrap gap-1">
-                    {recipe.health_conditions.map((condition, index) => (
-                      <span key={index} className="inline-flex items-center px-2 py-1 rounded-full bg-red-100 text-red-800 text-xs">
-                        {condition}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            {/* ライフステージ */}
-            {recipe.life_stage && (
-              <div className="flex items-center text-sm text-gray-500">
-                <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                </svg>
-                <span>ライフステージ: {recipe.life_stage}</span>
-              </div>
-            )}
+        <div className="space-y-3">
+          {/* 調理時間 */}
+          <div className="flex items-center text-sm text-gray-500">
+            <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>調理時間: {recipe.cooking_time}分</span>
           </div>
           
-          <div className="mt-6">
-            <div className="inline-flex items-center justify-center w-full px-4 py-3 bg-red-600 text-white rounded-lg group-hover:bg-red-700 transition-colors duration-200 font-medium">
-              <span>レシピを見る</span>
-              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          {/* 難易度 */}
+          <div className="flex items-center text-sm text-gray-500">
+            <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            <span>難易度: {recipe.difficulty}</span>
+          </div>
+          
+          {/* 体のお悩み */}
+          {recipe.health_conditions && recipe.health_conditions.length > 0 && (
+            <div className="flex items-start text-sm text-gray-500">
+              <svg className="w-4 h-4 mr-2 mt-0.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
+              <div>
+                <span className="block mb-1">体のお悩み:</span>
+                <div className="flex flex-wrap gap-1">
+                  {recipe.health_conditions.map((condition, index) => (
+                    <span key={index} className="inline-flex items-center px-2 py-1 rounded-full bg-red-100 text-red-800 text-xs">
+                      {condition}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* ライフステージ */}
+          {recipe.life_stage && (
+            <div className="flex items-center text-sm text-gray-500">
+              <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+              </svg>
+              <span>ライフステージ: {recipe.life_stage}</span>
+            </div>
+          )}
+        </div>
+        
+        <div className="mt-6">
+            <div className="inline-flex items-center justify-center w-full px-4 py-3 bg-red-600 text-white rounded-lg group-hover:bg-red-700 transition-colors duration-200 font-medium">
+            <span>レシピを見る</span>
+            <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
             </div>
           </div>
         </div>
@@ -352,43 +352,43 @@ export default function FeaturePage() {
         </div>
 
         {/* 関連レシピ */}
-        {(() => {
-          const recipes = extractRecipes(feature);
-          return recipes.length > 0 && (
+          {(() => {
+            const recipes = extractRecipes(feature);
+            return recipes.length > 0 && (
             <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-              {(() => {
-                const sections = getSectionsWithRecipes();
+                  {(() => {
+                    const sections = getSectionsWithRecipes();
                 console.log('小項目データ:', sections);
                 console.log('特集データ全体:', feature);
                 console.log('特集のsections:', feature?.sections);
                 
-                return sections.map((section: any, sectionIndex: number) => (
-                  <div key={sectionIndex} className="mb-8">
+                    return sections.map((section: any, sectionIndex: number) => (
+                      <div key={sectionIndex} className="mb-8">
                     <h3 className="text-2xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-red-200">
-                      {section.title}
+                          {section.title}
                     </h3>
                     
-                    {section.description && (
+                        {section.description && (
                       <p className="text-lg text-gray-600 mb-6 leading-relaxed">{section.description}</p>
-                    )}
-                    
-                    {section.recipes.length > 0 ? (
+                        )}
+                        
+                        {section.recipes.length > 0 ? (
                       <div className="space-y-6">
-                        {section.recipes.map((recipe: Recipe) => (
+                            {section.recipes.map((recipe: Recipe) => (
                           <div key={recipe.id} className="w-full">
                             <RecipeCard recipe={recipe} />
                           </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-gray-500 text-center py-8">このカテゴリーにはレシピがありません</p>
-                    )}
+                            ))}
+                    </div>
+                        ) : (
+                          <p className="text-gray-500 text-center py-8">このカテゴリーにはレシピがありません</p>
+                        )}
                   </div>
-                ));
-              })()}
-            </div>
-          );
-        })()}
+                    ));
+                  })()}
+          </div>
+            );
+          })()}
 
         {/* 戻るボタン */}
         <div className="mt-8 text-center">

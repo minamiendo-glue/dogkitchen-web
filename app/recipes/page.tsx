@@ -4,7 +4,6 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { SafeImage } from "@/components/safe-image";
 import { convertR2ImageUrl } from "@/lib/utils/image-url";
 import { Footer } from "@/components/footer";
-import { Header } from "@/components/header";
 
 // ビルド時に外部WPを叩かず、実行時ISRで取得する
 export const dynamic = "force-dynamic"; // 人気順ソートのため動的生成に変更
@@ -42,7 +41,7 @@ async function getRecipes(sortBy: string = 'newest'): Promise<Recipe[]> {
 
       // お気に入り数を取得してソート
       const recipesWithFavorites = await Promise.all(
-        (allRecipes || []).map(async (recipe) => {
+        (allRecipes || []).map(async (recipe: Recipe) => {
           const { count } = await supabaseAdmin
             .from('favorite_recipes')
             .select('*', { count: 'exact', head: true })
@@ -89,8 +88,7 @@ export default async function RecipesPage({
   const recipes = await getRecipes(sortBy);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header currentPage="recipes" />
+    <div>
       <main className="mx-auto max-w-6xl px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-extrabold tracking-tight">

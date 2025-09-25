@@ -5,13 +5,17 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-// 環境変数の検証
+// 環境変数の検証（開発環境では警告のみ、本番環境ではエラー）
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Supabase environment variables are not set properly. Please check your .env.local file and ensure you have NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Supabase environment variables are not set properly. Please check your .env.local file and ensure you have NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  } else {
+    console.warn('Supabase environment variables are not set. Please check your .env.local file.');
+  }
 }
 
 // サーバーサイドでのみサービスロールキーを検証
-if (typeof window === 'undefined' && !supabaseServiceKey) {
+if (typeof window === 'undefined' && process.env.NODE_ENV === 'production' && !supabaseServiceKey) {
   throw new Error('SUPABASE_SERVICE_ROLE_KEY is required for server-side operations');
 }
 
@@ -21,11 +25,11 @@ let supabaseAdminInstance: any = null;
 
 // クライアントサイド用（ブラウザ）
 export const supabase = (() => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && supabaseUrl && supabaseAnonKey) {
     if (!supabaseInstance) {
       supabaseInstance = createClient(
-        supabaseUrl!,
-        supabaseAnonKey!,
+        supabaseUrl,
+        supabaseAnonKey,
         {
           auth: {
             autoRefreshToken: true,
@@ -41,7 +45,7 @@ export const supabase = (() => {
 
 // サーバーサイド用（管理権限）- サーバーサイドでのみ使用
 export const supabaseAdmin = (() => {
-  if (typeof window === 'undefined' && supabaseServiceKey && !supabaseAdminInstance) {
+  if (typeof window === 'undefined' && supabaseUrl && supabaseServiceKey && !supabaseAdminInstance) {
     supabaseAdminInstance = createClient(
       supabaseUrl,
       supabaseServiceKey,

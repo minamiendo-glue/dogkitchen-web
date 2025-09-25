@@ -8,14 +8,7 @@ import { RichTextEditor } from '@/components/admin/rich-text-editor';
 import { FeatureSectionEditor } from '@/components/admin/feature-section-editor';
 import RecipeSearch from '@/components/admin/recipe-search';
 import { Feature, CreateFeatureData, FeatureSection } from '@/types/blog';
-
-interface Recipe {
-  id: string;
-  title: string;
-  thumbnail_url?: string;
-  difficulty: string;
-  cooking_time: number;
-}
+import { Recipe } from '@/types/recipe';
 
 export default function EditFeaturePage() {
   const router = useRouter();
@@ -427,7 +420,7 @@ export default function EditFeaturePage() {
             </div>
 
             <RecipeSearch
-              onRecipesChange={setRecipes}
+              onRecipesChange={(recipes) => setRecipes(recipes)}
               selectedRecipeIds={selectedRecipes}
               onSelectionChange={setSelectedRecipes}
             />
