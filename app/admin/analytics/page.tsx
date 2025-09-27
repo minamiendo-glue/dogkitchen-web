@@ -1,18 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/admin-auth-context';
+import { useAdminAuth } from '@/contexts/admin-auth-context';
 
 interface AnalyticsData {
-  overview: any;
-  recipes: any;
-  searches: any;
-  filters: any;
-  daily: any;
+  overview?: any;
+  recipes?: any;
+  searches?: any;
+  filters?: any;
+  daily?: any;
 }
 
 export default function AnalyticsPage() {
-  const { token } = useAuth();
+  const { adminUser } = useAdminAuth();
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'recipes' | 'searches' | 'filters' | 'daily'>('overview');
@@ -21,11 +21,7 @@ export default function AnalyticsPage() {
   // データ取得
   const fetchAnalytics = async (metric: string) => {
     try {
-      const response = await fetch(`/api/admin/analytics?metric=${metric}&period=${period}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await fetch(`/api/admin/analytics?metric=${metric}&period=${period}`);
 
       const result = await response.json();
       if (result.success) {

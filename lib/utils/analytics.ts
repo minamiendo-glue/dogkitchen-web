@@ -203,5 +203,5 @@ export function trackShare(recipeId: string, platform: string) {
 
 // フィルター適用用のトラッキング
 export function trackFilter(filters: Record<string, any>) {
-  analytics.trackUserAction('filter_apply', null, 'filter', { filters });
+  analytics.trackUserAction('filter_apply', undefined, 'filter', { filters });
 }

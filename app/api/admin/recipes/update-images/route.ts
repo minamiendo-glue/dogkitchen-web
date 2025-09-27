@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
         continue;
       }
 
-      totalUpdated += data?.length || 0;
+      totalUpdated += (data as unknown as any[])?.length || 0;
     }
 
     // 残りのレシピにデフォルト画像を設定
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     if (defaultError) {
       console.error('デフォルト画像更新エラー:', defaultError);
     } else {
-      totalUpdated += defaultUpdate?.length || 0;
+      totalUpdated += (defaultUpdate as unknown as any[])?.length || 0;
     }
 
     // 更新されたレシピを取得して確認

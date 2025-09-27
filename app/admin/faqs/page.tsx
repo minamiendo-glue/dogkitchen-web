@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/admin-auth-context';
+import { useAdminAuth } from '@/contexts/admin-auth-context';
 
 interface FAQ {
   id: string;
@@ -14,7 +14,7 @@ interface FAQ {
 }
 
 export default function FAQManagementPage() {
-  const { token } = useAuth();
+  const { adminUser } = useAdminAuth();
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,11 +34,7 @@ export default function FAQManagementPage() {
   const fetchFAQs = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/faqs', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await fetch('/api/admin/faqs');
 
       const data = await response.json();
       
@@ -69,7 +65,6 @@ export default function FAQManagementPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(formData)
       });
@@ -101,7 +96,6 @@ export default function FAQManagementPage() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(formData)
       });
@@ -131,9 +125,7 @@ export default function FAQManagementPage() {
     try {
       const response = await fetch(`/api/admin/faqs/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: {}
       });
 
       const data = await response.json();
@@ -162,7 +154,6 @@ export default function FAQManagementPage() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ faqs: orderUpdates })
       });

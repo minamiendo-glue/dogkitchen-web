@@ -235,7 +235,7 @@ SELECT 'Analytics tables created successfully' as message;
     return NextResponse.json({
       success: true,
       message: '分析テーブルが正常に作成されました',
-      created_tables: tables?.map(t => t.table_name) || [],
+      created_tables: tables?.map((t: any) => t.table_name) || [],
       data: data
     });
 
@@ -282,7 +282,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const existingTables = tables?.map(t => t.table_name) || [];
+    const existingTables = tables?.map((t: any) => t.table_name) || [];
     const requiredTables = ['page_views', 'recipe_views', 'search_logs', 'user_actions'];
     const missingTables = requiredTables.filter(table => !existingTables.includes(table));
 

@@ -51,24 +51,24 @@ export async function GET(request: NextRequest) {
     // 統計情報を計算
     const articleStats = {
       total: articles?.length || 0,
-      published: articles?.filter(a => a.status === 'published').length || 0,
-      draft: articles?.filter(a => a.status === 'draft').length || 0,
-      archived: articles?.filter(a => a.status === 'archived').length || 0
+      published: articles?.filter((a: any) => a.status === 'published').length || 0,
+      draft: articles?.filter((a: any) => a.status === 'draft').length || 0,
+      archived: articles?.filter((a: any) => a.status === 'archived').length || 0
     };
 
     const featureStats = {
       total: features?.length || 0,
-      published: features?.filter(f => f.status === 'published').length || 0,
-      draft: features?.filter(f => f.status === 'draft').length || 0,
-      archived: features?.filter(f => f.status === 'archived').length || 0
+      published: features?.filter((f: any) => f.status === 'published').length || 0,
+      draft: features?.filter((f: any) => f.status === 'draft').length || 0,
+      archived: features?.filter((f: any) => f.status === 'archived').length || 0
     };
 
     // 問題のある記事を特定
-    const problematicArticles = articles?.filter(a => 
+    const problematicArticles = articles?.filter((a: any) => 
       a.status !== 'published' && a.status !== 'draft' && a.status !== 'archived'
     ) || [];
 
-    const problematicFeatures = features?.filter(f => 
+    const problematicFeatures = features?.filter((f: any) => 
       f.status !== 'published' && f.status !== 'draft' && f.status !== 'archived'
     ) || [];
 

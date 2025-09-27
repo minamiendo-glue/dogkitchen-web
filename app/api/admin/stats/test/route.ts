@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Admin stats test error:', error);
     return NextResponse.json(
-      { error: '統計データの取得に失敗しました', details: error.message },
+      { error: '統計データの取得に失敗しました', details: (error as Error).message },
       { status: 500 }
     );
   }

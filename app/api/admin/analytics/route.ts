@@ -67,7 +67,7 @@ async function getOverviewStats(startDate: Date) {
       .select('session_id')
       .gte('created_at', startDate.toISOString());
 
-    const sessionCount = new Set(uniqueSessions?.map(s => s.session_id)).size;
+    const sessionCount = new Set(uniqueSessions?.map((s: any) => s.session_id)).size;
 
     // レシピ閲覧数
     const { data: recipeViews, error: recipeViewsError } = await supabaseAdmin
@@ -122,7 +122,7 @@ async function getRecipeStats(startDate: Date) {
 
     // レシピ別統計を計算
     const recipeStats: Record<string, any> = {};
-    popularRecipes?.forEach(view => {
+    popularRecipes?.forEach((view: any) => {
       const recipeId = view.recipe_id;
       if (!recipeStats[recipeId]) {
         recipeStats[recipeId] = {
@@ -183,7 +183,7 @@ async function getSearchStats(startDate: Date) {
 
     // 検索クエリ別統計を計算
     const queryStats: Record<string, any> = {};
-    searches?.forEach(search => {
+    searches?.forEach((search: any) => {
       const query = search.search_query;
       if (!queryStats[query]) {
         queryStats[query] = {
@@ -242,10 +242,10 @@ async function getFilterStats(startDate: Date) {
 
     // フィルター使用統計を計算
     const filterStats: Record<string, any> = {};
-    searches?.forEach(search => {
+    searches?.forEach((search: any) => {
       const filters = search.search_filters;
       if (filters && typeof filters === 'object') {
-        Object.entries(filters).forEach(([key, value]) => {
+        Object.entries(filters).forEach(([key, value]: [string, any]) => {
           const filterKey = `${key}:${value}`;
           if (!filterStats[filterKey]) {
             filterStats[filterKey] = {

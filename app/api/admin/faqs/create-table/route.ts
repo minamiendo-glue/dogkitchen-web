@@ -88,13 +88,13 @@ export async function POST(request: NextRequest) {
         const { data, error } = await supabaseAdmin.rpc('exec_sql', { sql: command.sql });
         if (error) {
           console.error(`${command.name}エラー:`, error);
-          results.push({ name: command.name, success: false, error: error.message });
+          results.push({ name: command.name, success: false, error: (error as Error).message });
         } else {
           results.push({ name: command.name, success: true });
         }
       } catch (error) {
         console.error(`${command.name}実行エラー:`, error);
-        results.push({ name: command.name, success: false, error: error.message });
+        results.push({ name: command.name, success: false, error: (error as Error).message });
       }
     }
 

@@ -92,7 +92,7 @@ async function getRecipe(slug: string) {
       
       // デバッグ情報を出力
       console.log('Searching for recipe with slug:', slug);
-      console.log('Available recipes:', recipes.map(r => ({ id: r.id, slug: r.slug, title: r.title })));
+      console.log('Available recipes:', recipes.map((r: any) => ({ id: r.id, slug: r.slug, title: r.title })));
       
       // slugで検索（slugはIDと同じ値）
       let recipe = recipes.find((recipe: any) => recipe.slug === slug);
