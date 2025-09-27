@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/components/auth/supabase-provider';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -31,7 +31,7 @@ const healthConditions = [
   '特になし'
 ];
 
-export default function EditDogProfile() {
+function EditDogProfileForm() {
   const { user, session, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -68,7 +68,7 @@ export default function EditDogProfile() {
           const response = await fetch('/api/profile/create', {
             credentials: 'include',
             headers: {
-              'Authorization': `Bearer ${session.access_token}`,
+              'Authorization': `Bearer ${session?.access_token}`,
             },
           });
           if (response.ok) {
@@ -119,7 +119,7 @@ export default function EditDogProfile() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
+          'Authorization': `Bearer ${session?.access_token}`,
         },
         credentials: 'include',
         body: JSON.stringify(dogProfile),
@@ -149,7 +149,7 @@ export default function EditDogProfile() {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
+          'Authorization': `Bearer ${session?.access_token}`,
         },
         credentials: 'include',
         body: JSON.stringify({ id: dogProfile.id }),
@@ -420,5 +420,13 @@ export default function EditDogProfile() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function EditDogProfile() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <EditDogProfileForm />
+    </Suspense>
   );
 }

@@ -67,7 +67,10 @@ export async function GET(
 }
 
 // 記事更新（管理者のみ）
-export async function PUT(request: NextRequest, { params }: RouteParams) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
   try {
     if (!supabaseAdmin) {
       return NextResponse.json(
@@ -170,7 +173,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 }
 
 // 記事削除（管理者のみ）
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
   try {
     if (!supabaseAdmin) {
       return NextResponse.json(

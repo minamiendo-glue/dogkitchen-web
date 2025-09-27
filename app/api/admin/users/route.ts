@@ -23,7 +23,7 @@ export async function GET() {
     }
 
     // ユーザー情報を整形
-    const formattedUsers = users?.users?.map(user => ({
+    const formattedUsers = users?.users?.map((user: any) => ({
       id: user.id,
       email: user.email,
       name: user.user_metadata?.name || user.user_metadata?.full_name,

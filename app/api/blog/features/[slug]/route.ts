@@ -164,7 +164,7 @@ export async function GET(
 }
 
 // 特集更新（管理者のみ）
-export async function PUT(request: NextRequest, { params }: RouteParams) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
     if (!supabaseAdmin) {
       return NextResponse.json(
@@ -293,7 +293,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 }
 
 // 特集削除（管理者のみ）
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
     if (!supabaseAdmin) {
       return NextResponse.json(

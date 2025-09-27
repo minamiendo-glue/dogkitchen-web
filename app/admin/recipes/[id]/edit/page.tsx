@@ -412,13 +412,14 @@ function EditRecipePage({ params }: EditRecipePageProps) {
         <div className="bg-white shadow rounded-lg p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">サムネイル画像</h2>
           <R2FileUpload
-            onUpload={(url, key) => {
+            onFileUploaded={(url, key) => {
               setThumbnailUrl(url);
               setThumbnailKey(key);
             }}
-            currentImageUrl={thumbnailUrl}
-            folder="recipes/thumbnails"
+            currentUrl={thumbnailUrl}
+            category="recipes/thumbnails"
             accept="image/*"
+            maxSize={10}
           />
         </div>
 
@@ -426,8 +427,10 @@ function EditRecipePage({ params }: EditRecipePageProps) {
         <div className="bg-white shadow rounded-lg p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">メイン動画</h2>
           <VideoUpload
-            onUpload={(videoData) => setMainVideoData(videoData)}
-            currentVideoData={mainVideoData}
+            label="メイン動画"
+            type="main"
+            onVideoUploaded={(videoData) => setMainVideoData(videoData)}
+            onError={(error) => console.error('Video upload error:', error)}
           />
         </div>
 
@@ -436,7 +439,7 @@ function EditRecipePage({ params }: EditRecipePageProps) {
           <h2 className="text-xl font-semibold text-gray-900 mb-4">材料</h2>
           <IngredientInput
             ingredients={ingredients}
-            onIngredientsChange={setIngredients}
+            onChange={setIngredients}
           />
         </div>
 
@@ -445,7 +448,7 @@ function EditRecipePage({ params }: EditRecipePageProps) {
           <h2 className="text-xl font-semibold text-gray-900 mb-4">作り方</h2>
           <InstructionInput
             instructions={instructions}
-            onInstructionsChange={setInstructions}
+            onChange={setInstructions}
           />
         </div>
 

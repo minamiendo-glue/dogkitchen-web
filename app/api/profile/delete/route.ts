@@ -40,11 +40,14 @@ export async function DELETE(request: NextRequest) {
     }
 
     // プロフィールの存在確認と所有者確認
-    const profileIndex = mockDogProfiles.findIndex(
-      profile => profile.id === id && profile.userId === session.user?.email
-    );
+    const { data: profile, error: fetchError } = await supabase
+      .from('dog_profiles')
+      .select('id, user_id')
+      .eq('id', id)
+      .eq('user_id', session.user.id)
+      .single();
 
-    if (profileIndex === -1) {
+    if (fetchError || !profile) {
       return NextResponse.json(
         { error: 'プロフィールが見つからないか、削除権限がありません' },
         { status: 404 }
@@ -52,7 +55,19 @@ export async function DELETE(request: NextRequest) {
     }
 
     // プロフィールを削除
-    mockDogProfiles.splice(profileIndex, 1);
+    const { error: deleteError } = await supabase
+      .from('dog_profiles')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', session.user.id);
+
+    if (deleteError) {
+      console.error('プロフィール削除エラー:', deleteError);
+      return NextResponse.json(
+        { error: 'プロフィールの削除に失敗しました' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
       { message: '愛犬プロフィールが正常に削除されました' },

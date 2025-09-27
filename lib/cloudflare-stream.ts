@@ -139,7 +139,7 @@ export class CloudflareStream {
             method: 'POST',
             headers: {
               ...headers
-            },
+            } as unknown as HeadersInit,
             body: formData
           });
           

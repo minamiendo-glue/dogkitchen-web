@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
     }
 
     // レシピ数の整形
-    const formattedArticles = articles?.map(article => ({
+    const formattedArticles = articles?.map((article: any) => ({
       ...article,
       recipe_count: Array.isArray(article.recipe_count) ? article.recipe_count.length : 0
     })) || [];

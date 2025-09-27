@@ -28,11 +28,11 @@ export default function TestPremiumPage() {
           {/* ユーザー情報 */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">ユーザー情報</h2>
-            {session ? (
+            {user ? (
               <div>
-                <p className="text-gray-600 mb-2">メール: {session.user?.email}</p>
-                <p className="text-gray-600 mb-2">名前: {session.user?.name}</p>
-                <p className="text-gray-600">ID: {session.user?.id}</p>
+                <p className="text-gray-600 mb-2">メール: {user.email}</p>
+                <p className="text-gray-600 mb-2">名前: {user.user_metadata?.name || '未設定'}</p>
+                <p className="text-gray-600">ID: {user.id}</p>
               </div>
             ) : (
               <p className="text-gray-600">ログインしていません</p>

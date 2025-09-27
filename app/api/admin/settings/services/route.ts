@@ -9,18 +9,18 @@ export async function GET() {
       supabase: {
         connected: false,
         status: '',
-        details: null
+        details: null as any
       },
       cloudflare: {
         r2: {
           connected: false,
           status: '',
-          details: null
+          details: null as any
         },
         stream: {
           connected: false,
           status: '',
-          details: null
+          details: null as any
         }
       }
     };

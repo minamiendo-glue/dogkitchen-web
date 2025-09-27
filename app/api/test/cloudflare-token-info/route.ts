@@ -147,11 +147,13 @@ export async function GET(request: NextRequest) {
     });
 
     if (!response || !response.ok) {
-      let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      let errorMessage = response ? `HTTP ${response.status}: ${response.statusText}` : 'No response received';
       try {
-        const errorData = await response.json();
-        console.error('Token info error response:', errorData);
-        errorMessage = errorData.errors?.[0]?.message || errorData.message || errorMessage;
+        if (response) {
+          const errorData = await response.json();
+          console.error('Token info error response:', errorData);
+          errorMessage = errorData.errors?.[0]?.message || errorData.message || errorMessage;
+        }
       } catch (parseError) {
         console.error('Failed to parse error response:', parseError);
       }

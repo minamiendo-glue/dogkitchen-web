@@ -28,6 +28,7 @@ export interface Feature {
   created_by?: string;
   recipes?: FeatureRecipe[];
   sections?: FeatureSectionData[];
+  recipe_count?: number;
 }
 
 // 特集小項目のデータ型（データベースから取得）

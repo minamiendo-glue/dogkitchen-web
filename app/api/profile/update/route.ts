@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-// import { mockDogProfiles, DogProfile } from '@/lib/data/mock-dog-profiles'; // Supabaseに移行
+
+interface DogProfile {
+  id: string;
+  name: string;
+  weight: number;
+  activityLevel: 'low' | 'medium' | 'high';
+  healthConditions?: string[];
+  lifeStage: 'puppy' | 'adult' | 'senior';
+  breed: string;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -67,36 +76,51 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // プロフィールの更新
-    const existingProfileIndex = mockDogProfiles.findIndex(profile => profile.id === id);
+    // プロフィールの存在確認と所有者確認
+    const { data: existingProfile, error: fetchError } = await supabase
+      .from('dog_profiles')
+      .select('id, user_id')
+      .eq('id', id)
+      .eq('user_id', session.user.id)
+      .single();
     
-    if (existingProfileIndex === -1) {
+    if (fetchError || !existingProfile) {
       return NextResponse.json(
-        { error: 'プロフィールが見つかりません' },
+        { error: 'プロフィールが見つからないか、更新権限がありません' },
         { status: 404 }
       );
     }
 
-    // プロフィールを更新（既存のuserIdとcreatedAtを保持）
-    const existingProfile = mockDogProfiles[existingProfileIndex];
-    mockDogProfiles[existingProfileIndex] = {
-      id,
-      userId: existingProfile.userId,
-      name,
-      weight,
-      activityLevel,
-      healthConditions: healthConditions || [],
-      lifeStage,
-      breed,
-      createdAt: existingProfile.createdAt
-    };
+    // プロフィールを更新
+    const { data: updatedProfile, error: updateError } = await supabase
+      .from('dog_profiles')
+      .update({
+        name,
+        weight,
+        activity_level: activityLevel,
+        health_conditions: healthConditions || [],
+        life_stage: lifeStage,
+        breed
+      })
+      .eq('id', id)
+      .eq('user_id', session.user.id)
+      .select()
+      .single();
 
-    console.log(`Updated dog profile for user ${session.user?.email}:`, mockDogProfiles[existingProfileIndex]);
+    if (updateError) {
+      console.error('プロフィール更新エラー:', updateError);
+      return NextResponse.json(
+        { error: 'プロフィールの更新に失敗しました' },
+        { status: 500 }
+      );
+    }
+
+    console.log(`Updated dog profile for user ${session.user?.email}:`, updatedProfile);
 
     return NextResponse.json(
       { 
         message: 'プロフィールが正常に更新されました',
-        profile: mockDogProfiles[existingProfileIndex]
+        profile: updatedProfile
       },
       { status: 200 }
     );
@@ -135,10 +159,21 @@ export async function GET(request: NextRequest) {
     }
 
     // ユーザーの愛犬プロフィールを取得
-    const userProfiles = mockDogProfiles; // 実際の実装ではユーザーIDでフィルタリング
+    const { data: userProfiles, error: fetchError } = await supabase
+      .from('dog_profiles')
+      .select('*')
+      .eq('user_id', session.user.id);
+
+    if (fetchError) {
+      console.error('プロフィール取得エラー:', fetchError);
+      return NextResponse.json(
+        { error: 'プロフィールの取得に失敗しました' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
-      { profiles: userProfiles },
+      { profiles: userProfiles || [] },
       { status: 200 }
     );
 

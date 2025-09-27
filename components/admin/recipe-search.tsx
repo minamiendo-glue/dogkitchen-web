@@ -133,7 +133,7 @@ export default function RecipeSearch({ onRecipesChange, selectedRecipeIds, onSel
 
     // 健康状態
     if (filters.healthCondition) {
-      filtered = filtered.filter(recipe => recipe.healthCondition === filters.healthCondition);
+      filtered = filtered.filter(recipe => recipe.healthConditions.includes(filters.healthCondition as any));
     }
 
     // タンパク質タイプ
@@ -161,10 +161,10 @@ export default function RecipeSearch({ onRecipesChange, selectedRecipeIds, onSel
 
     // カロリー
     if (filters.caloriesMin !== '') {
-      filtered = filtered.filter(recipe => recipe.calories >= Number(filters.caloriesMin));
+      filtered = filtered.filter(recipe => recipe.calories && Number(recipe.calories) >= Number(filters.caloriesMin));
     }
     if (filters.caloriesMax !== '') {
-      filtered = filtered.filter(recipe => recipe.calories <= Number(filters.caloriesMax));
+      filtered = filtered.filter(recipe => recipe.calories && Number(recipe.calories) <= Number(filters.caloriesMax));
     }
 
     // ソート
@@ -185,8 +185,8 @@ export default function RecipeSearch({ onRecipesChange, selectedRecipeIds, onSel
           bValue = b.calories;
           break;
         default:
-          aValue = new Date(a.created_at);
-          bValue = new Date(b.created_at);
+          aValue = new Date(a.createdAt);
+          bValue = new Date(b.createdAt);
       }
 
       if (filters.sortOrder === 'asc') {

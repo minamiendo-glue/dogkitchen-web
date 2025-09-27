@@ -122,7 +122,10 @@ export async function GET(
 }
 
 // 管理画面用の特集編集
-export async function PUT(request: NextRequest, { params }: RouteParams) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
   try {
     if (!supabaseAdmin) {
       return NextResponse.json(
@@ -303,7 +306,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 }
 
 // 管理画面用の特集削除
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
   try {
     if (!supabaseAdmin) {
       return NextResponse.json(

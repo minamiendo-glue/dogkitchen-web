@@ -229,21 +229,21 @@ export default function ArticlePage() {
                       href={`/recipes/${recipe.id}`}
                       className="group bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-red-300 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
                     >
-                      {recipe.thumbnail_url && (
+                      {recipe.recipe?.image_url && (
                         <div className="aspect-video bg-gray-200 rounded-lg mb-4 overflow-hidden">
                           <img
-                            src={recipe.thumbnail_url}
-                            alt={recipe.title}
+                            src={recipe.recipe.image_url}
+                            alt={recipe.recipe.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         </div>
                       )}
                       <h3 className="font-bold text-gray-900 mb-3 text-lg group-hover:text-red-600 transition-colors duration-200">
-                        {recipe.title}
+                        {recipe.recipe?.title || 'レシピタイトル'}
                       </h3>
-                      {recipe.description && (
+                      {recipe.recipe?.description && (
                         <p className="text-gray-600 leading-relaxed line-clamp-3">
-                          {recipe.description}
+                          {recipe.recipe.description}
                         </p>
                       )}
                       <div className="mt-4 flex items-center text-red-500 font-medium">

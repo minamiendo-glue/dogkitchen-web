@@ -113,13 +113,11 @@ export default function CreateDogProfile() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     setError('');
     setSuccess('');
 
     if (!user?.id) {
       setError('ユーザー情報が取得できません。再度ログインしてください。');
-      setIsSubmitting(false);
       return;
     }
 
@@ -134,7 +132,7 @@ export default function CreateDogProfile() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
+          'Authorization': `Bearer ${session?.access_token}`,
         },
         credentials: 'include',
         body: JSON.stringify({
@@ -157,8 +155,6 @@ export default function CreateDogProfile() {
     } catch (error) {
       console.error('プロフィール作成エラー:', error);
       setError('プロフィールの作成に失敗しました。もう一度お試しください。');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

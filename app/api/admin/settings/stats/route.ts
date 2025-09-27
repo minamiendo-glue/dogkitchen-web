@@ -30,7 +30,7 @@ export async function GET() {
       .lte('created_at', `${today}T23:59:59.999Z`);
 
     // 今日登録されたユーザー数
-    const todayUsers = users?.users?.filter(user => 
+    const todayUsers = users?.users?.filter((user: any) => 
       user.created_at.startsWith(today)
     ).length || 0;
 

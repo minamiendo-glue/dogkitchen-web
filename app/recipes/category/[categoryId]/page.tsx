@@ -387,13 +387,13 @@ export default function CategoryRecipePage() {
                   cookingTimeMinutes: recipe.cooking_time,
                   servings: recipe.servings,
                   difficulty: recipe.difficulty as 'easy' | 'medium' | 'hard',
-                  lifeStage: recipe.life_stage as 'puppy' | 'junior' | 'adult' | 'senior' | 'elderly',
-                  proteinType: recipe.protein_type as 'beef' | 'chicken' | 'pork' | 'salmon' | 'lamb' | 'horse',
-                  healthConditions: recipe.health_conditions,
-                  mealScene: recipe.meal_scene as 'daily' | 'snack' | 'shared' | 'special',
+                  lifeStage: recipe.life_stage as 'puppy' | 'adult' | 'senior',
+                  proteinType: recipe.protein_type as 'beef' | 'chicken' | 'pork' | 'horse' | 'fish' | 'kangaroo',
+                  healthConditions: recipe.health_conditions as any[],
+                  mealScene: recipe.meal_scene as 'daily' | 'snack' | 'special',
                   slug: recipe.id, // IDをslugとして使用
-                  createdAt: new Date(recipe.created_at),
-                  updatedAt: new Date(recipe.updated_at)
+                  videoUrl: '',
+                  createdAt: new Date(recipe.created_at)
                 }}
               />
             ))}
@@ -423,6 +423,7 @@ export default function CategoryRecipePage() {
     </div>
   );
 }
+
 
 
 

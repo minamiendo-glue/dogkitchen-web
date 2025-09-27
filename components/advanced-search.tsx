@@ -287,12 +287,12 @@ export function AdvancedSearch({ onFiltersChange, showSearchButton = true }: Adv
                     <label key={stage.value} className="flex items-center">
                       <input
                         type="checkbox"
-                        checked={filters.lifeStage.includes(stage.value)}
+                        checked={filters.lifeStage.includes(stage.value as any)}
                         onChange={(e) => {
                           if (e.target.checked) {
                             setFilters(prev => ({
                               ...prev,
-                              lifeStage: [...prev.lifeStage, stage.value]
+                              lifeStage: [...prev.lifeStage, stage.value as any]
                             }));
                           } else {
                             setFilters(prev => ({
@@ -319,12 +319,12 @@ export function AdvancedSearch({ onFiltersChange, showSearchButton = true }: Adv
                     <label key={condition.value} className="flex items-center">
                       <input
                         type="checkbox"
-                        checked={filters.healthConditions.includes(condition.value)}
+                        checked={filters.healthConditions.includes(condition.value as any)}
                         onChange={(e) => {
                           if (e.target.checked) {
                             setFilters(prev => ({
                               ...prev,
-                              healthConditions: [...prev.healthConditions, condition.value]
+                              healthConditions: [...prev.healthConditions, condition.value as any]
                             }));
                           } else {
                             setFilters(prev => ({
@@ -351,12 +351,12 @@ export function AdvancedSearch({ onFiltersChange, showSearchButton = true }: Adv
                     <label key={type.value} className="flex items-center">
                       <input
                         type="checkbox"
-                        checked={filters.proteinType.includes(type.value)}
+                        checked={filters.proteinType.includes(type.value as any)}
                         onChange={(e) => {
                           if (e.target.checked) {
                             setFilters(prev => ({
                               ...prev,
-                              proteinType: [...prev.proteinType, type.value]
+                              proteinType: [...prev.proteinType, type.value as any]
                             }));
                           } else {
                             setFilters(prev => ({
@@ -383,12 +383,12 @@ export function AdvancedSearch({ onFiltersChange, showSearchButton = true }: Adv
                     <label key={scene.value} className="flex items-center">
                       <input
                         type="checkbox"
-                        checked={filters.mealScene.includes(scene.value)}
+                        checked={filters.mealScene.includes(scene.value as any)}
                         onChange={(e) => {
                           if (e.target.checked) {
                             setFilters(prev => ({
                               ...prev,
-                              mealScene: [...prev.mealScene, scene.value]
+                              mealScene: [...prev.mealScene, scene.value as any]
                             }));
                           } else {
                             setFilters(prev => ({

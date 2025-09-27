@@ -58,7 +58,7 @@ function extractRecipes(feature: Feature): Recipe[] {
       }
       return null;
     })
-    .filter(Boolean); // nullを除外
+    .filter(Boolean) as Recipe[]; // nullを除外
     
   return extracted;
 }
@@ -108,6 +108,7 @@ export default function FeaturePage() {
 
   // 小項目ごとのレシピを取得
   const getSectionsWithRecipes = () => {
+    if (!feature) return [];
     const recipes = extractRecipes(feature);
     
     // 小項目が存在しない場合は、デフォルトの小項目を作成

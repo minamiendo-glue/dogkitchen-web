@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import { AdvancedSearch } from '@/components/advanced-search';
 import { RecipeCard } from '@/components/recipe-card';
@@ -56,7 +56,7 @@ function convertSupabaseToRecipe(supabaseRecipe: SupabaseRecipe): any {
   };
 }
 
-export default function Home() {
+function HomePage() {
   const { user } = useAuth();
   const [filters, setFilters] = useState<RecipeFiltersType>({});
   const [recipes, setRecipes] = useState<any[]>([]);
@@ -298,5 +298,13 @@ export default function Home() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomePage />
+    </Suspense>
   );
 }

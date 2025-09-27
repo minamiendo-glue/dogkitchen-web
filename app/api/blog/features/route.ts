@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     }
 
     // レシピ数の整形
-    const formattedFeatures = features?.map(feature => ({
+    const formattedFeatures = features?.map((feature: any) => ({
       ...feature,
       recipe_count: Array.isArray(feature.recipe_count) ? feature.recipe_count.length : 0
     })) || [];

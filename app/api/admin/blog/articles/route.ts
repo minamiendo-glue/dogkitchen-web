@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
 
     // レシピとの紐づけ
     if (recipe_ids && recipe_ids.length > 0) {
-      const articleRecipes = recipe_ids.map((recipe_id, index) => ({
+      const articleRecipes = recipe_ids.map((recipe_id: string, index: number) => ({
         article_id: newArticle.id,
         recipe_id,
         display_order: index

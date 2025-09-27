@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
 
     // お気に入り数を取得してソート
     const recipesWithFavorites = await Promise.all(
-      (allRecipes || []).map(async (recipe) => {
+      (allRecipes || []).map(async (recipe: any) => {
         const { count } = await supabaseAdmin
           .from('favorite_recipes')
           .select('*', { count: 'exact', head: true })

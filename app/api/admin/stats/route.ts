@@ -31,11 +31,13 @@ async function getAdminStats(request: NextRequest) {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     
-    const { count: activeUsers } = await supabase.auth.admin
+    const { data: usersData } = await supabase.auth.admin
       .listUsers({
         page: 1,
         perPage: 1000 // 最大1000ユーザーまで取得
       });
+    
+    const activeUsers = usersData?.users?.length || 0;
 
     // プレミアム会員数を取得（Stripeのサブスクリプションから）
     let premiumUsers = 0;
@@ -82,7 +84,7 @@ async function getAdminStats(request: NextRequest) {
       .lte('created_at', endOfLastMonth.toISOString());
 
     // 前月のユーザー数（概算）
-    const lastMonthUserCount = Math.max(0, (activeUsers?.length || 0) - 5); // 簡易的な計算
+    const lastMonthUserCount = Math.max(0, activeUsers - 5); // 簡易的な計算
 
     // 前月のプレミアム会員数（概算）
     const lastMonthPremiumUsers = Math.max(0, premiumUsers - 1);
@@ -90,14 +92,14 @@ async function getAdminStats(request: NextRequest) {
     // 変更数を計算
     const totalRecipesChange = (totalRecipes || 0) - (lastMonthTotalRecipes || 0);
     const monthlyRecipesChange = (monthlyRecipes || 0) - (lastMonthNewRecipes || 0);
-    const activeUsersChange = (activeUsers?.length || 0) - lastMonthUserCount;
+    const activeUsersChange = activeUsers - lastMonthUserCount;
     const premiumUsersChange = premiumUsers - lastMonthPremiumUsers;
 
     // 統計データを返す
     const stats = {
       totalRecipes: totalRecipes || 0,
       monthlyRecipes: monthlyRecipes || 0,
-      activeUsers: activeUsers?.length || 0,
+      activeUsers: activeUsers,
       premiumUsers: premiumUsers,
       changes: {
         totalRecipes: totalRecipesChange >= 0 ? `+${totalRecipesChange}` : `${totalRecipesChange}`,
