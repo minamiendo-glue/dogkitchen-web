@@ -1,0 +1,174 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase';
+
+// FAQテーブルセットアップ状況確認
+export async function GET(request: NextRequest) {
+  try {
+    if (!supabaseAdmin) {
+      return NextResponse.json(
+        { error: 'サーバー設定エラー' },
+        { status: 500 }
+      );
+    }
+
+    // テーブルが既に存在するかチェック
+    const { data: existingData, error: checkError } = await supabaseAdmin
+      .from('faqs')
+      .select('id, question, answer, display_order, status')
+      .limit(1);
+
+    if (checkError) {
+      if (checkError.code === 'PGRST116' || checkError.message?.includes('relation "faqs" does not exist')) {
+        return NextResponse.json({
+          exists: false,
+          message: 'FAQテーブルが存在しません。作成が必要です。',
+          setupRequired: true
+        });
+      }
+      
+      return NextResponse.json(
+        { error: 'テーブル確認に失敗しました', details: checkError.message },
+        { status: 500 }
+      );
+    }
+
+    if (existingData && existingData.length > 0) {
+      return NextResponse.json({
+        exists: true,
+        message: 'FAQテーブルは既に存在し、データも設定されています',
+        faqCount: existingData.length,
+        sampleData: existingData[0]
+      });
+    }
+
+    return NextResponse.json({
+      exists: true,
+      message: 'FAQテーブルは存在しますが、データがありません',
+      faqCount: 0,
+      setupRequired: true
+    });
+
+  } catch (error) {
+    console.error('FAQテーブル確認エラー:', error);
+    return NextResponse.json(
+      { error: 'テーブル確認に失敗しました' },
+      { status: 500 }
+    );
+  }
+}
+
+// FAQテーブルセットアップ
+export async function POST(request: NextRequest) {
+  try {
+    if (!supabaseAdmin) {
+      return NextResponse.json(
+        { error: 'サーバー設定エラー' },
+        { status: 500 }
+      );
+    }
+
+    // 管理者権限チェック
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) {
+      return NextResponse.json(
+        { error: '認証が必要です' },
+        { status: 401 }
+      );
+    }
+
+    // FAQテーブル作成のSQL
+    const createFAQTableSQL = `
+      CREATE TABLE IF NOT EXISTS faqs (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        question TEXT NOT NULL,
+        answer TEXT NOT NULL,
+        display_order INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'published' CHECK (status IN ('published', 'draft', 'archived')),
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+    `;
+
+    // インデックス作成のSQL
+    const createIndexesSQL = [
+      `CREATE INDEX IF NOT EXISTS idx_faqs_status ON faqs(status);`,
+      `CREATE INDEX IF NOT EXISTS idx_faqs_display_order ON faqs(display_order);`,
+      `CREATE INDEX IF NOT EXISTS idx_faqs_created_at ON faqs(created_at);`
+    ];
+
+    // 更新日時の自動更新トリガー関数
+    const createTriggerFunctionSQL = `
+      CREATE OR REPLACE FUNCTION update_faqs_updated_at()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        NEW.updated_at = NOW();
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+    `;
+
+    // トリガー作成のSQL
+    const createTriggerSQL = `
+      DROP TRIGGER IF EXISTS trigger_update_faqs_updated_at ON faqs;
+      CREATE TRIGGER trigger_update_faqs_updated_at
+        BEFORE UPDATE ON faqs
+        FOR EACH ROW
+        EXECUTE FUNCTION update_faqs_updated_at();
+    `;
+
+    // サンプルデータ挿入のSQL
+    const insertSampleDataSQL = `
+      INSERT INTO faqs (question, answer, display_order, status) VALUES
+      ('DOG KITCHENとは何ですか？', 'DOG KITCHENは愛犬の健康をサポートする手作りご飯レシピサイトです。ライフステージや体の悩みに合わせた、栄養バランスの良いレシピを提供しています。', 1, 'published'),
+      ('プレミアム機能にはどのようなものがありますか？', 'プレミアム機能では、愛犬の体重や年齢を入力するだけで最適な食材量を自動計算する機能や、詳細な栄養情報の表示、専用のレシピ動画などがご利用いただけます。', 2, 'published'),
+      ('レシピの信頼性はどの程度ですか？', 'すべてのレシピは獣医師監修のもと、栄養バランスを考慮して作成されています。愛犬の健康を第一に考えた、安全で美味しいレシピをお届けしています。', 3, 'published'),
+      ('アレルギー対応のレシピはありますか？', 'はい、アレルギー対応のレシピも豊富にご用意しています。レシピ検索で「アレルギー対応」を選択することで、お探しのレシピを見つけることができます。', 4, 'published'),
+      ('プレミアムプランの料金はいくらですか？', 'プレミアムプランは月額500円でご利用いただけます。愛犬の健康管理をサポートする全機能を無制限でご利用いただけます。', 5, 'published'),
+      ('レシピの保存はできますか？', 'はい、お気に入り機能でお気に入りのレシピを保存できます。ログイン後、レシピカードのハートマークをクリックして保存してください。', 6, 'published'),
+      ('動画レシピの再生速度は変更できますか？', 'はい、動画プレイヤーの速度変更ボタンから、0.5倍速から2倍速までお好みの速度でご覧いただけます。', 7, 'published'),
+      ('アカウントの削除はできますか？', 'はい、マイページの設定からアカウントを削除することができます。削除後はデータの復旧ができませんので、ご注意ください。', 8, 'published')
+      ON CONFLICT DO NOTHING;
+    `;
+
+    // テーブルが既に存在するかチェック
+    const { data: existingData, error: checkError } = await supabaseAdmin
+      .from('faqs')
+      .select('id')
+      .limit(1);
+
+    if (existingData && existingData.length > 0) {
+      return NextResponse.json({
+        success: true,
+        message: 'FAQテーブルは既に存在し、データも設定されています',
+        faqCount: existingData.length
+      });
+    }
+
+    // テーブルが存在しない場合、手動で作成する必要があることを通知
+    return NextResponse.json({
+      success: false,
+      message: 'FAQテーブルが存在しません。以下のSQLをSupabaseの管理画面で実行してください：',
+      sql: {
+        createTable: createFAQTableSQL,
+        createIndexes: createIndexesSQL,
+        createTriggerFunction: createTriggerFunctionSQL,
+        createTrigger: createTriggerSQL,
+        insertData: insertSampleDataSQL
+      },
+      instructions: [
+        '1. Supabase Dashboard (https://supabase.com/dashboard) にアクセス',
+        '2. プロジェクトを選択',
+        '3. 左サイドバーの「SQL Editor」をクリック',
+        '4. 上記のSQLを順番に実行',
+        '5. 実行後、このAPIを再度呼び出して確認'
+      ]
+    });
+
+  } catch (error) {
+    console.error('FAQテーブルセットアップエラー:', error);
+    return NextResponse.json(
+      { error: 'FAQテーブルセットアップに失敗しました', details: error },
+      { status: 500 }
+    );
+  }
+}

@@ -15,7 +15,7 @@ export default function AboutPage() {
   useEffect(() => {
     async function getAboutVideoSettings() {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/admin/settings`, {
+        const response = await fetch('/api/admin/settings', {
           cache: 'no-store'
         });
         

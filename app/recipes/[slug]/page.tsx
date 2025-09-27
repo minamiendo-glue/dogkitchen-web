@@ -13,63 +13,8 @@ import { useEffect, useState } from "react";
 import { convertR2ImageUrl } from "@/lib/utils/image-url";
 import { useAuth } from "@/components/auth/supabase-provider";
 import { adjustRecipeForDog, calculateDogNutritionRequirements, type DogProfile, type AdjustedIngredient, type DogNutritionRequirements } from "@/lib/nutrition-calculator";
-
-// Supabaseのレシピ型定義
-interface SupabaseRecipe {
-  id: string;
-  title: string;
-  description: string;
-  cooking_time: number;
-  servings: string;
-  life_stage: string;
-  protein_type: string;
-  meal_scene: string;
-  difficulty: string;
-  health_conditions?: string[];
-  thumbnail_url?: string;
-  main_video_id?: string;
-  main_video_url?: string;
-  ingredients?: any[];
-  instructions?: any[];
-  nutrition_info?: {
-    calories: number;
-    protein: number;
-    fat: number;
-    carbs: number;
-    fiber: number;
-    calculated_at: string;
-  };
-}
-
-// Supabaseのデータを既存のRecipe型に変換する関数
-function convertSupabaseToRecipe(supabaseRecipe: SupabaseRecipe): any {
-  return {
-    id: supabaseRecipe.id,
-    title: supabaseRecipe.title,
-    slug: supabaseRecipe.id, // IDをslugとして使用（日本語タイトルのため）
-    description: supabaseRecipe.description,
-    cookingTimeMinutes: supabaseRecipe.cooking_time,
-    lifeStage: supabaseRecipe.life_stage,
-    healthConditions: supabaseRecipe.health_conditions || [],
-    proteinType: supabaseRecipe.protein_type,
-    mealScene: supabaseRecipe.meal_scene,
-    videoUrl: supabaseRecipe.main_video_url || '',
-    thumbnailUrl: supabaseRecipe.thumbnail_url || '',
-    servings: supabaseRecipe.servings,
-    difficulty: supabaseRecipe.difficulty,
-    ingredients: supabaseRecipe.ingredients || [],
-    instructions: supabaseRecipe.instructions || [],
-    nutritionInfo: supabaseRecipe.nutrition_info || {
-      calories: 0,
-      protein: 0,
-      fat: 0,
-      carbs: 0,
-      fiber: 0,
-      calculated_at: null
-    },
-    createdAt: new Date()
-  };
-}
+import { convertSupabaseToRecipe } from "@/lib/utils/recipe-converter";
+import { useRecipeTracking } from "@/lib/utils/analytics";
 
 // Cloudflare Streamの動画URLを正しい形式に変換する関数
 function convertCloudflareStreamUrl(url: string): string {
@@ -137,19 +82,26 @@ function isValidVideoUrl(url: string): boolean {
 
 async function getRecipe(slug: string) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/admin/recipes`, {
+    const response = await fetch('/api/admin/recipes', {
       cache: 'no-store'
     });
     const data = await response.json();
     
     if (data.success && data.recipes) {
       const recipes = data.recipes.map(convertSupabaseToRecipe);
-      // slugで検索、見つからない場合はIDで検索
+      
+      // デバッグ情報を出力
+      console.log('Searching for recipe with slug:', slug);
+      console.log('Available recipes:', recipes.map(r => ({ id: r.id, slug: r.slug, title: r.title })));
+      
+      // slugで検索（slugはIDと同じ値）
       let recipe = recipes.find((recipe: any) => recipe.slug === slug);
       if (!recipe) {
         // slugが見つからない場合は、IDで検索（URLが直接IDでアクセスされた場合）
         recipe = recipes.find((recipe: any) => recipe.id === slug);
       }
+      
+      console.log('Found recipe:', recipe ? { id: recipe.id, title: recipe.title } : 'Not found');
       return recipe;
     }
     
@@ -162,7 +114,7 @@ async function getRecipe(slug: string) {
 
 async function getAllRecipes() {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/admin/recipes`, {
+    const response = await fetch('/api/admin/recipes', {
       cache: 'no-store'
     });
     const data = await response.json();
@@ -359,6 +311,13 @@ export default function RecipeDetail({ params }: { params: Promise<{ slug: strin
     
     initData();
   }, [params]);
+
+  // レシピ閲覧トラッキング
+  useEffect(() => {
+    if (recipe?.id) {
+      return useRecipeTracking(recipe.id);
+    }
+  }, [recipe?.id]);
 
   // レシピの分量を愛犬に合わせて調整する関数
   const adjustRecipeForMyDog = async () => {

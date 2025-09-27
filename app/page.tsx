@@ -11,50 +11,8 @@ import { PremiumButton } from '@/components/premium-button';
 import { Footer } from '@/components/footer';
 import { useAuth } from '@/components/auth/supabase-provider';
 import { filterRecipes, getActiveFilterCount } from '@/lib/utils/recipe-filter';
+import { convertSupabaseToRecipe } from '@/lib/utils/recipe-converter';
 import type { RecipeFilters as RecipeFiltersType } from '@/types/recipe';
-
-// Supabaseのレシピ型定義
-interface SupabaseRecipe {
-  id: string;
-  title: string;
-  description: string;
-  cooking_time: number;
-  servings: string;
-  life_stage: string;
-  protein_type: string;
-  meal_scene: string;
-  difficulty: string;
-  health_conditions?: string[];
-  thumbnail_url?: string;
-  main_video_id?: string;
-  main_video_url?: string;
-  ingredients?: any[];
-  instructions?: any[];
-  nutrition_info?: any;
-}
-
-// Supabaseのデータを既存のRecipe型に変換する関数
-function convertSupabaseToRecipe(supabaseRecipe: SupabaseRecipe): any {
-  return {
-    id: supabaseRecipe.id,
-    title: supabaseRecipe.title,
-    slug: supabaseRecipe.id, // IDをslugとして使用（日本語タイトルのため）
-    description: supabaseRecipe.description,
-    cookingTimeMinutes: supabaseRecipe.cooking_time,
-    lifeStage: supabaseRecipe.life_stage as any,
-    healthConditions: supabaseRecipe.health_conditions || [],
-    proteinType: supabaseRecipe.protein_type as any,
-    mealScene: supabaseRecipe.meal_scene as any,
-    videoUrl: supabaseRecipe.main_video_url || '',
-    thumbnailUrl: supabaseRecipe.thumbnail_url || '',
-    servings: supabaseRecipe.servings,
-    difficulty: supabaseRecipe.difficulty,
-    ingredients: supabaseRecipe.ingredients || [],
-    instructions: supabaseRecipe.instructions || [],
-    nutritionInfo: supabaseRecipe.nutrition_info || {},
-    createdAt: new Date()
-  };
-}
 
 function HomePage() {
   const { user } = useAuth();
@@ -70,8 +28,8 @@ function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // レシピデータを取得
-        const recipesResponse = await fetch('/api/admin/recipes');
+        // 新着レシピ10個を取得
+        const recipesResponse = await fetch('/api/admin/recipes?limit=10');
         const recipesData = await recipesResponse.json();
         if (recipesData.success) {
           const convertedRecipes = (recipesData.recipes || []).map(convertSupabaseToRecipe);
@@ -205,12 +163,22 @@ function HomePage() {
             <h3 className="text-lg font-semibold text-gray-900">
               レシピ一覧
             </h3>
-            {activeFilterCount > 0 && (
+            {activeFilterCount > 0 ? (
               <span className="bg-red-100 text-red-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
                 {filteredRecipes.length}件のレシピが見つかりました
               </span>
+            ) : (
+              <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
+                新着順
+              </span>
             )}
           </div>
+          <Link
+            href="/recipes?sort=popular"
+            className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm"
+          >
+            人気レシピを見る
+          </Link>
         </div>
 
         {/* レシピグリッド */}

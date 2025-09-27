@@ -282,7 +282,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     if (!supabaseAdmin) {
       return NextResponse.json(
@@ -291,11 +291,27 @@ export async function GET() {
       );
     }
 
-    // Supabaseからレシピ一覧を取得
-    const { data: recipes, error: fetchError } = await supabaseAdmin
-      .from('recipes')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const { searchParams } = new URL(request.url);
+    const limit = searchParams.get('limit');
+    const sort = searchParams.get('sort');
+
+    let query = supabaseAdmin.from('recipes').select('*');
+
+    // ソート順を設定
+    if (sort === 'popular') {
+      // 人気順（将来的にいいね数や閲覧数でソート）
+      query = query.order('created_at', { ascending: false });
+    } else {
+      // デフォルトは新着順
+      query = query.order('created_at', { ascending: false });
+    }
+
+    // 制限を設定
+    if (limit) {
+      query = query.limit(parseInt(limit));
+    }
+
+    const { data: recipes, error: fetchError } = await query;
 
     if (fetchError) {
       console.error('Supabase fetch error:', fetchError);
@@ -307,7 +323,8 @@ export async function GET() {
     
     return NextResponse.json({
       success: true,
-      recipes: recipes || []
+      recipes: recipes || [],
+      count: recipes?.length || 0
     });
   } catch (error) {
     console.error('レシピ取得エラー:', error);

@@ -38,6 +38,18 @@ export function AdminHeader() {
       description: '特集の管理'
     },
     {
+      href: '/admin/faqs',
+      label: 'FAQ管理',
+      icon: '❓',
+      description: 'よくある質問の管理'
+    },
+    {
+      href: '/admin/analytics',
+      label: 'アクセス分析',
+      icon: '📊',
+      description: 'サイト利用状況の分析'
+    },
+    {
       href: '/admin/users',
       label: 'ユーザー管理',
       icon: '👥',

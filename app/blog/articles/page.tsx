@@ -113,11 +113,6 @@ export default function ArticlesPage() {
                         <span className="text-6xl group-hover:scale-110 transition-transform duration-300">🐕</span>
                       </div>
                     )}
-                    {article.recipe_count && article.recipe_count > 0 && (
-                      <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-red-600 text-white text-sm px-3 py-2 rounded-full shadow-lg font-semibold">
-                        📝 {article.recipe_count}レシピ
-                      </div>
-                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
                   </div>
                   

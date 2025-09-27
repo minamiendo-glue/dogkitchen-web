@@ -151,11 +151,6 @@ export default function FeaturesPage() {
                     
                     <div className="flex items-center justify-between text-sm text-gray-500">
                       <span>{feature.published_at ? formatDate(feature.published_at) : '未公開'}</span>
-                      {feature.recipe_count && feature.recipe_count > 0 && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full bg-gray-100">
-                          {feature.recipe_count}件のレシピ
-                        </span>
-                      )}
                     </div>
                   </div>
                 </Link>

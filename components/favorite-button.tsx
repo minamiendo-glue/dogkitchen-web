@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/auth/supabase-provider';
 import { cachedFetch, useButtonLoading, getErrorMessage, buttonStyles, LoadingSpinner, clearCache } from '@/lib/utils/button-optimization';
+import { trackFavorite } from '@/lib/utils/analytics';
 
 interface FavoriteButtonProps {
   recipeId: string;
@@ -62,7 +63,12 @@ export function FavoriteButton({ recipeId, className = '' }: FavoriteButtonProps
         }
 
         if (response.ok) {
-          setIsFavorite(!isFavorite);
+          const newFavoriteState = !isFavorite;
+          setIsFavorite(newFavoriteState);
+          
+          // トラッキング
+          trackFavorite(recipeId, newFavoriteState ? 'add' : 'remove');
+          
           // キャッシュをクリア
           clearCache(`/api/favorites?userId=${user.id}`);
         } else {

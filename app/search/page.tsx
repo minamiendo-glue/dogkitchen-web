@@ -6,6 +6,7 @@ import { RecipeCard } from '@/components/recipe-card';
 import { PremiumButton } from '@/components/premium-button';
 import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
+import { trackSearch, trackFilter } from '@/lib/utils/analytics';
 // Supabaseクライアントのインポートを削除
 
 // カテゴリー型定義
