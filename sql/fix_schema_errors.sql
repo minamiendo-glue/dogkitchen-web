@@ -54,3 +54,4 @@ CREATE INDEX IF NOT EXISTS idx_recipes_nutrition_protein ON recipes USING GIN ((
 
 
 
+
