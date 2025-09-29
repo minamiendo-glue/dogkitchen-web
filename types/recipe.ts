@@ -39,6 +39,15 @@ export type Difficulty =
   | 'medium'     // 普通
   | 'hard';      // 難しい
 
+export type RecipeType = 
+  | 'video_steps'    // ステップ動画形式
+  | 'image_plating'; // 盛り付け画像形式
+
+export interface PlatingImage {
+  url: string;
+  comment: string;
+}
+
 export interface Recipe {
   id: string;
   title: string;
@@ -50,6 +59,7 @@ export interface Recipe {
   proteinType: ProteinType;
   mealScene: MealScene;
   difficulty: Difficulty;
+  recipeType?: RecipeType;
   videoUrl: string;
   thumbnailUrl: string;
   nutritionInfo?: {
@@ -63,6 +73,7 @@ export interface Recipe {
     amount: string;
   }>;
   instructions?: string[];
+  platingImages?: PlatingImage[];
   servings?: string;
   calories?: string;
   nutrition?: {

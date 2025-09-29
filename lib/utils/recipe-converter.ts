@@ -12,11 +12,13 @@ export interface SupabaseRecipe {
   meal_scene: string;
   difficulty: string;
   health_conditions?: string[];
+  recipe_type?: string;
   thumbnail_url?: string;
   main_video_id?: string;
   main_video_url?: string;
   ingredients?: any[];
   instructions?: any[];
+  plating_images?: any[];
   nutrition_info?: {
     calories: number;
     protein: number;
@@ -38,12 +40,14 @@ export interface ConvertedRecipe {
   healthConditions: string[];
   proteinType: string;
   mealScene: string;
+  recipeType?: string;
   videoUrl: string;
   thumbnailUrl: string;
   servings: string;
   difficulty: string;
   ingredients: any[];
   instructions: any[];
+  platingImages?: any[];
   nutritionInfo: {
     calories: number;
     protein: number;
@@ -67,12 +71,14 @@ export function convertSupabaseToRecipe(supabaseRecipe: SupabaseRecipe): Convert
     healthConditions: supabaseRecipe.health_conditions || [],
     proteinType: supabaseRecipe.protein_type,
     mealScene: supabaseRecipe.meal_scene,
+    recipeType: supabaseRecipe.recipe_type || 'video_steps',
     videoUrl: supabaseRecipe.main_video_url || '',
     thumbnailUrl: supabaseRecipe.thumbnail_url || '',
     servings: supabaseRecipe.servings,
     difficulty: supabaseRecipe.difficulty,
     ingredients: supabaseRecipe.ingredients || [],
     instructions: supabaseRecipe.instructions || [],
+    platingImages: supabaseRecipe.plating_images || [],
     nutritionInfo: supabaseRecipe.nutrition_info || {
       calories: 0,
       protein: 0,

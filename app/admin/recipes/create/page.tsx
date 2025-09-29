@@ -6,6 +6,7 @@ import { R2FileUpload } from '@/components/admin/r2-file-upload';
 import { VideoUpload } from '@/components/admin/video-upload';
 import { IngredientInput } from '@/components/admin/ingredient-input';
 import { InstructionInput } from '@/components/admin/instruction-input';
+import { PlatingImageInput } from '@/components/admin/plating-image-input';
 
 interface Ingredient {
   name: string;
@@ -21,6 +22,11 @@ interface Instruction {
   videoUrl?: string;
 }
 
+interface PlatingImage {
+  url: string;
+  comment: string;
+}
+
 function CreateRecipePage() {
   const router = useRouter();
   
@@ -34,11 +40,13 @@ function CreateRecipePage() {
     proteinType: '',
     mealScene: '',
     difficulty: '',
-    healthConditions: [] as string[]
+    healthConditions: [] as string[],
+    recipeType: 'video_steps' as 'video_steps' | 'image_plating'
   });
 
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [instructions, setInstructions] = useState<Instruction[]>([]);
+  const [platingImages, setPlatingImages] = useState<PlatingImage[]>([]);
   const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
   const [thumbnailKey, setThumbnailKey] = useState<string>('');
   const [mainVideoData, setMainVideoData] = useState<{
@@ -55,6 +63,20 @@ function CreateRecipePage() {
       ...prev,
       [field]: value
     }));
+  };
+
+  const handleRecipeTypeChange = (type: 'video_steps' | 'image_plating') => {
+    setFormData(prev => ({
+      ...prev,
+      recipeType: type
+    }));
+    
+    // 表示タイプが変更されたときに、対応するデータをクリア
+    if (type === 'video_steps') {
+      setPlatingImages([]);
+    } else {
+      setInstructions([]);
+    }
   };
 
   const handleHealthConditionChange = (condition: string, checked: boolean) => {
@@ -80,8 +102,14 @@ function CreateRecipePage() {
         return;
       }
 
-      if (instructions.length === 0) {
+      // 表示タイプに応じた検証
+      if (formData.recipeType === 'video_steps' && instructions.length === 0) {
         alert('作り方の手順を少なくとも1つ追加してください');
+        return;
+      }
+      
+      if (formData.recipeType === 'image_plating' && platingImages.length === 0) {
+        alert('盛り付け画像を少なくとも1つ追加してください');
         return;
       }
 
@@ -98,6 +126,8 @@ function CreateRecipePage() {
       submitData.append('healthConditions', JSON.stringify(formData.healthConditions));
       submitData.append('ingredients', JSON.stringify(ingredients));
       submitData.append('instructions', JSON.stringify(instructions));
+      submitData.append('platingImages', JSON.stringify(platingImages));
+      submitData.append('recipeType', formData.recipeType);
       submitData.append('status', status);
 
       // サムネイル画像のURLを追加（R2から）
@@ -375,11 +405,73 @@ function CreateRecipePage() {
                 onChange={setIngredients}
               />
 
-              {/* 作り方の手順 */}
-              <InstructionInput
-                instructions={instructions}
-                onChange={setInstructions}
-              />
+              {/* 作り方の表示タイプ選択 */}
+              <div className="space-y-4">
+                <h4 className="text-md font-medium text-gray-900">作り方の表示形式</h4>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <label className="relative flex cursor-pointer rounded-lg p-4 focus:outline-none">
+                    <input
+                      type="radio"
+                      name="recipeType"
+                      value="video_steps"
+                      checked={formData.recipeType === 'video_steps'}
+                      onChange={() => handleRecipeTypeChange('video_steps')}
+                      className="sr-only"
+                    />
+                    <div className={`flex-1 rounded-lg border-2 p-4 ${
+                      formData.recipeType === 'video_steps'
+                        ? 'border-red-500 bg-red-50'
+                        : 'border-gray-200 bg-white'
+                    }`}>
+                      <div className="flex items-center">
+                        <div className="text-sm">
+                          <div className="font-medium text-gray-900">ステップ動画形式</div>
+                          <div className="text-gray-500">調理手順を動画で説明</div>
+                        </div>
+                      </div>
+                    </div>
+                  </label>
+
+                  <label className="relative flex cursor-pointer rounded-lg p-4 focus:outline-none">
+                    <input
+                      type="radio"
+                      name="recipeType"
+                      value="image_plating"
+                      checked={formData.recipeType === 'image_plating'}
+                      onChange={() => handleRecipeTypeChange('image_plating')}
+                      className="sr-only"
+                    />
+                    <div className={`flex-1 rounded-lg border-2 p-4 ${
+                      formData.recipeType === 'image_plating'
+                        ? 'border-red-500 bg-red-50'
+                        : 'border-gray-200 bg-white'
+                    }`}>
+                      <div className="flex items-center">
+                        <div className="text-sm">
+                          <div className="font-medium text-gray-900">盛り付け画像形式</div>
+                          <div className="text-gray-500">完成した料理の画像で説明</div>
+                        </div>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* 作り方の手順（動画形式の場合） */}
+              {formData.recipeType === 'video_steps' && (
+                <InstructionInput
+                  instructions={instructions}
+                  onChange={setInstructions}
+                />
+              )}
+
+              {/* 盛り付け画像（画像形式の場合） */}
+              {formData.recipeType === 'image_plating' && (
+                <PlatingImageInput
+                  platingImages={platingImages}
+                  onChange={setPlatingImages}
+                />
+              )}
             </div>
           </div>
         </div>

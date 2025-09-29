@@ -125,6 +125,8 @@ export async function POST(request: NextRequest) {
     
     // フォームデータを解析
     const ingredients = JSON.parse(formData.get('ingredients') as string || '[]');
+    const platingImages = JSON.parse(formData.get('platingImages') as string || '[]');
+    const recipeType = formData.get('recipeType') as string || 'video_steps';
     
     // 材料データの構造を正規化
     const normalizedIngredients = ingredients.map((ingredient: any) => {
@@ -209,6 +211,8 @@ export async function POST(request: NextRequest) {
       health_conditions: JSON.parse(formData.get('healthConditions') as string || '[]'),
       ingredients: ingredients, // 元の形式で保存
       instructions: processedInstructions,
+      recipe_type: recipeType,
+      plating_images: platingImages,
       status: formData.get('status') as 'draft' | 'published',
       thumbnail_url: thumbnailUrl || formData.get('thumbnailUrl') as string || '',
       main_video_id: mainVideoId,

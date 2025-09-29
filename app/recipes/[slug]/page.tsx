@@ -661,55 +661,104 @@ export default function RecipeDetail({ params }: { params: Promise<{ slug: strin
         {/* 作り方 */}
         <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">作り方</h2>
-          {recipe.instructions && recipe.instructions.length > 0 ? (
-          <div className="space-y-4 sm:space-y-6">
-              {recipe.instructions.map((instruction: any, index: number) => (
-              <div key={index} className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-shrink-0 flex justify-center sm:justify-start">
-                  <div className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                    {index + 1}
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <div className="mb-3">
-                      <div className="w-48 mx-auto sm:mx-0">
-                        {instruction.videoUrl && instruction.videoUrl.trim() !== '' ? (
-                          (() => {
-                            const convertedUrl = convertInstructionVideoUrl(instruction.videoUrl);
-                            console.log(`Rendering instruction video ${index + 1}:`, convertedUrl);
-                            return (
-                      <VideoPlayer
-                                src={convertedUrl}
-                        title={`${recipe.title} - ステップ ${index + 1}`}
-                        className="w-full"
-                        autoPlay={false}
-                        muted={true}
-                        aspectRatio="1:1"
-                      />
-                            );
-                          })()
+          
+          {/* 表示タイプに応じた表示 */}
+          {recipe.recipeType === 'image_plating' ? (
+            // 盛り付け画像形式の表示
+            recipe.platingImages && recipe.platingImages.length > 0 ? (
+              <div className="space-y-6">
+                {recipe.platingImages.map((platingImage: any, index: number) => (
+                  <div key={index} className="space-y-3">
+                    <div className="flex justify-center">
+                      <div className="w-full max-w-md">
+                        {platingImage.url && platingImage.url.trim() !== '' ? (
+                          <div className="relative w-full aspect-square rounded-lg overflow-hidden shadow-lg">
+                            <Image
+                              src={convertR2ImageUrl(platingImage.url)}
+                              alt={`${recipe.title} - 完成画像 ${index + 1}`}
+                              fill
+                              sizes="(max-width: 768px) 100vw, 400px"
+                              className="object-cover"
+                            />
+                          </div>
                         ) : (
                           <div className="w-full aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
                             <div className="text-center">
-                              <div className="text-2xl mb-1">🎬</div>
-                              <div className="text-gray-500 text-xs font-medium">動画なし</div>
+                              <div className="text-4xl mb-2">🍽️</div>
+                              <div className="text-gray-500 text-sm font-medium">画像なし</div>
                             </div>
                           </div>
                         )}
                       </div>
                     </div>
-                    <p className="text-sm sm:text-base text-gray-900 leading-relaxed">
-                      {instruction.text || instruction.description || instruction.step_text || `ステップ ${index + 1}`}
-                    </p>
-                </div>
+                    {platingImage.comment && (
+                      <div className="text-center">
+                        <p className="text-sm sm:text-base text-gray-700 leading-relaxed px-4">
+                          {platingImage.comment}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <div className="text-4xl mb-2">🍽️</div>
+                <p>盛り付け画像の情報が登録されていません</p>
+              </div>
+            )
           ) : (
-            <div className="text-center py-8 text-gray-500">
-              <div className="text-4xl mb-2">👨‍🍳</div>
-              <p>作り方の情報が登録されていません</p>
-            </div>
+            // ステップ動画形式の表示（既存の表示）
+            recipe.instructions && recipe.instructions.length > 0 ? (
+              <div className="space-y-4 sm:space-y-6">
+                {recipe.instructions.map((instruction: any, index: number) => (
+                  <div key={index} className="flex flex-col sm:flex-row gap-4">
+                    <div className="flex-shrink-0 flex justify-center sm:justify-start">
+                      <div className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                        {index + 1}
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="mb-3">
+                        <div className="w-48 mx-auto sm:mx-0">
+                          {instruction.videoUrl && instruction.videoUrl.trim() !== '' ? (
+                            (() => {
+                              const convertedUrl = convertInstructionVideoUrl(instruction.videoUrl);
+                              console.log(`Rendering instruction video ${index + 1}:`, convertedUrl);
+                              return (
+                                <VideoPlayer
+                                  src={convertedUrl}
+                                  title={`${recipe.title} - ステップ ${index + 1}`}
+                                  className="w-full"
+                                  autoPlay={false}
+                                  muted={true}
+                                  aspectRatio="1:1"
+                                />
+                              );
+                            })()
+                          ) : (
+                            <div className="w-full aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+                              <div className="text-center">
+                                <div className="text-2xl mb-1">🎬</div>
+                                <div className="text-gray-500 text-xs font-medium">動画なし</div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-sm sm:text-base text-gray-900 leading-relaxed">
+                        {instruction.text || instruction.description || instruction.step_text || `ステップ ${index + 1}`}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <div className="text-4xl mb-2">👨‍🍳</div>
+                <p>作り方の情報が登録されていません</p>
+              </div>
+            )
           )}
         </div>
 
